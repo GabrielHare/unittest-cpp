@@ -71,7 +71,7 @@ endif()
 # build the test runner
 file(GLOB TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} tests/*.cpp tests/*.h)
 source_group( "" FILES ${TEST_SRCS})
-add_executable(TestUnitTest++ ${TEST_SRCS})
+add_executable(TestUnitTest++ EXCLUDE_FROM_ALL ${TEST_SRCS})
 include_directories(.)
 
 if(${UTPP_USE_PLUS_SIGN})
