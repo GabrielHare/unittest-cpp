@@ -42,6 +42,8 @@ file(GLOB headers_ RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} UnitTest++/*.h)
 file(GLOB sources_ RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} UnitTest++/*.cpp)
 source_group("" FILES ${headers_} ${sources_})
 
+set(BUILD_SELF_TEST false CACHE BOOL "")
+
 # get platform specific sources
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
@@ -63,24 +65,27 @@ endif()
 
 
 # build the test runner
-file(GLOB TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} tests/*.cpp tests/*.h)
-source_group( "" FILES ${TEST_SRCS})
-add_executable(TestUnitTest++ ${TEST_SRCS})
-include_directories(.)
+if(BUILD_SELF_TEST)
+    file(GLOB TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} tests/*.cpp tests/*.h)
+    source_group( "" FILES ${TEST_SRCS})
 
-if(${UTPP_USE_PLUS_SIGN})
-	set_target_properties(TestUnitTest++ PROPERTIES OUTPUT_NAME TestUnitTest++)
-endif()
+    add_executable(TestUnitTest++ ${TEST_SRCS})
+    include_directories(.)
 
-target_link_libraries(TestUnitTest++ UnitTest++)
+    if(${UTPP_USE_PLUS_SIGN})
+    	set_target_properties(TestUnitTest++ PROPERTIES OUTPUT_NAME TestUnitTest++)
+    endif()
 
-# run unit tests as post build step
-add_custom_command(TARGET TestUnitTest++
-    POST_BUILD COMMAND TestUnitTest++
-    COMMENT "Running unit tests")
+    target_link_libraries(TestUnitTest++ UnitTest++)
 
-if(NOT ${UTPP_INCLUDE_TESTS_IN_BUILD})
-    set_target_properties(TestUnitTest++ PROPERTIES EXCLUDE_FROM_ALL 1)
+    # run unit tests as post build step
+    add_custom_command(TARGET TestUnitTest++
+        POST_BUILD COMMAND TestUnitTest++
+        COMMENT "Running unit tests")
+
+    if(NOT ${UTPP_INCLUDE_TESTS_IN_BUILD})
+        set_target_properties(TestUnitTest++ PROPERTIES EXCLUDE_FROM_ALL 1)
+    endif()
 endif()
 
 # add install targets
